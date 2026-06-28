@@ -1,0 +1,212 @@
+# BÁO CÁO PHÂN TÍCH
+
+## Bài: Phân tích giải pháp xây dựng API lấy danh sách sách sắp hết hàng
+
+# Phần 1. Phân tích Input/Output
+
+### 1. Input của bài toán
+
+Input là danh sách các quyển sách được lưu trong một biến `books`.
+
+Mỗi quyển sách gồm các thông tin:
+
+* `id`: Mã sách.
+* `title`: Tên sách.
+* `quantity`: Số lượng sách còn trong kho.
+
+API sử dụng phương thức:
+
+```text
+GET /books/low-stock
+```
+
+API không sử dụng Path Parameter, Query Parameter hoặc Request Body.
+
+---
+
+### 2. Output mong muốn
+
+API trả về dữ liệu dưới dạng JSON gồm hai trường:
+
+* `message`: Thông báo kết quả.
+* `data`: Danh sách các sách sắp hết hàng.
+
+Nếu có sách sắp hết hàng:
+
+```json
+{
+    "message": "Danh sách sách sắp hết hàng",
+    "data": [
+        ...
+    ]
+}
+```
+
+Nếu không có sách nào sắp hết hàng:
+
+```json
+{
+    "message": "Không có sách nào sắp hết hàng",
+    "data": []
+}
+```
+
+---
+
+### 3. Điều kiện xác định sách sắp hết hàng
+
+Một quyển sách được xem là sắp hết hàng khi:
+
+```text
+quantity <= 5
+```
+
+Ngoài ra cần xử lý các trường hợp đặc biệt:
+
+* Nếu sách không có trường `quantity` thì bỏ qua.
+* Nếu `quantity < 0` thì xem là dữ liệu không hợp lệ và bỏ qua.
+
+---
+
+# Phần 2. Đề xuất các giải pháp
+
+## Giải pháp 1: Sử dụng vòng lặp for
+
+Các bước thực hiện:
+
+1. Khởi tạo một danh sách rỗng để lưu kết quả.
+2. Duyệt từng quyển sách trong danh sách.
+3. Kiểm tra xem sách có trường `quantity` hay không.
+4. Nếu không có thì bỏ qua.
+5. Kiểm tra `quantity` có nhỏ hơn 0 hay không.
+6. Nếu nhỏ hơn 0 thì bỏ qua.
+7. Nếu `quantity <= 5` thì thêm sách vào danh sách kết quả.
+8. Sau khi duyệt xong, trả về kết quả.
+
+**Ưu điểm**
+
+* Dễ hiểu.
+* Dễ bổ sung nhiều điều kiện kiểm tra.
+* Phù hợp với người mới học Python và FastAPI.
+
+**Nhược điểm**
+
+* Code dài hơn.
+
+---
+
+## Giải pháp 2: Sử dụng List Comprehension
+
+Sử dụng List Comprehension để lọc danh sách trong một dòng lệnh.
+
+Ví dụ:
+
+* Chỉ lấy sách có trường `quantity`.
+* Bỏ qua dữ liệu không hợp lệ.
+* Lấy các sách có `quantity <= 5`.
+
+**Ưu điểm**
+
+* Code ngắn gọn.
+* Thực hiện nhanh và súc tích.
+
+**Nhược điểm**
+
+* Khó đọc hơn khi có nhiều điều kiện.
+* Khó mở rộng nếu cần xử lý thêm các nghiệp vụ khác.
+
+---
+
+# Phần 3. So sánh và lựa chọn giải pháp
+
+| Tiêu chí             | Vòng lặp for | List Comprehension |
+| -------------------- | ------------ | ------------------ |
+| Độ dễ hiểu           | Cao          | Trung bình         |
+| Độ ngắn gọn          | Trung bình   | Cao                |
+| Dễ xử lý bẫy dữ liệu | Cao          | Trung bình         |
+| Dễ bảo trì           | Cao          | Trung bình         |
+
+### Giải pháp được lựa chọn
+
+Em lựa chọn **vòng lặp `for`** để triển khai.
+
+**Lý do:**
+
+* Dễ đọc và dễ hiểu đối với người mới học.
+* Có thể kiểm tra từng điều kiện một cách rõ ràng.
+* Thuận tiện xử lý các trường hợp dữ liệu thiếu trường `quantity` hoặc `quantity` âm.
+* Khi cần bổ sung thêm điều kiện trong tương lai thì việc mở rộng code sẽ đơn giản hơn.
+
+---
+
+# Phần 4. Thiết kế các bước xử lý
+
+### Bước 1
+
+Khởi tạo ứng dụng FastAPI.
+
+---
+
+### Bước 2
+
+Khai báo danh sách `books`.
+
+---
+
+### Bước 3
+
+Tạo API:
+
+```text
+GET /books/low-stock
+```
+
+---
+
+### Bước 4
+
+Khởi tạo danh sách rỗng để lưu các sách sắp hết hàng.
+
+---
+
+### Bước 5
+
+Duyệt toàn bộ danh sách `books`.
+
+---
+
+### Bước 6
+
+Kiểm tra từng quyển sách:
+
+* Nếu `quantity <= 5` thì thêm vào danh sách kết quả.
+
+---
+
+### Bước 7
+
+Sau khi duyệt xong:
+
+* Nếu danh sách kết quả rỗng thì trả về:
+
+```json
+{
+    "message": "Không có sách nào sắp hết hàng",
+    "data": []
+}
+```
+
+* Nếu có dữ liệu thì trả về:
+
+```json
+{
+    "message": "Danh sách sách sắp hết hàng",
+    "data": [...]
+}
+```
+
+---
+
+### Bước 8
+
+FastAPI tự động chuyển dữ liệu Python thành JSON và gửi HTTP Response về cho Client.
