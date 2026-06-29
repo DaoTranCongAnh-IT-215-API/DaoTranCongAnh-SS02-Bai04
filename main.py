@@ -11,18 +11,21 @@ books = [
 ]
 
 @app.get("/books/low-stock")
-def get_LowStock():
+def low_stock_books():
     book_LowStock = []
    
     for bk in books:
-        if bk["quantity"] <= 5:
+        if (
+            isinstance(bk.get('quantity'), (int, float))
+            and 0 <= bk['quantity'] <= 5
+        ):
             book_LowStock.append(bk)
 
     if not book_LowStock:
         return{
-    "message": "Không có sách nào sắp hết hàng",
-    "data": book_LowStock
-}
+            "message": "Không có sách nào sắp hết hàng",
+            "data": book_LowStock
+        }
     else:
         return {
             "books" : book_LowStock
